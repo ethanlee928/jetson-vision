@@ -2,3 +2,10 @@
 
 **.mp4
 **.mov
+
+# models
+networks/*
+!networks/models.json
+!networks/ssd_coco_labels.txt
+!networks/detectnet.prototxt
+!networks/ilsvrc12_synset_words.txt
