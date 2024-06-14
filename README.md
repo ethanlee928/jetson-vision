@@ -1,7 +1,6 @@
 # Jetson Vision
 
-Real time video analytics with Nvidia's Jetson devices. 
-
+Real time video analytics with Nvidia's Jetson devices.
 
 ## Prerequisites
 
@@ -44,4 +43,26 @@ WARNING: No blkio weight_device support
 
 # Start docker container
 ./scripts/start.sh
+```
+
+### Download Pre-trained Models
+
+- Pretrained models will be downloaded @ `/jetson-inference/data/networks`
+- In `scripts/start.sh`, the models directory is mounted to local volume (`/media/data/models/`). Thus, no need to re-download the models multiple times in docker environment.
+
+```bash
+cd /jetson-inference/tools
+./download-models.sh
+```
+
+### Object Detection
+
+```bash
+python3 detect.py /dev/vidoe0
+```
+
+### Semantic Segmentation
+
+```bash
+python3 segment.py /dev/video0
 ```
