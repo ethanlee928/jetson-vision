@@ -4,7 +4,7 @@ import supervision as sv
 import jetson_inference
 import jetson_utils
 
-from common import parse_args, to_sv_detections
+from common import parse_args, to_sv_detections, FPSTicker
 
 
 if __name__ == "__main__":
@@ -14,6 +14,7 @@ if __name__ == "__main__":
 
     input = jetson_utils.videoSource(opt.input_URI, argv=sys.argv)
     output = jetson_utils.videoOutput(opt.output_URI, argv=sys.argv)
+    ticker = FPSTicker()
 
     start = sv.Point(1280 // 2, 0)
     end = sv.Point(1280 // 2, 720)
@@ -23,6 +24,7 @@ if __name__ == "__main__":
 
     while True:
         img = input.Capture()
+        ticker.tick()
         if img is None:
             continue
 
@@ -36,7 +38,6 @@ if __name__ == "__main__":
             )
 
         output.Render(img)
-        net.PrintProfilerTimes()
 
         if not input.IsStreaming() or not output.IsStreaming():
             break
