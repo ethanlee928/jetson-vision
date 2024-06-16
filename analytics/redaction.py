@@ -4,7 +4,7 @@ import supervision as sv
 import jetson_inference
 import jetson_utils
 
-from common import parse_args, to_sv_detections
+from common import parse_args, to_sv_detections, FPSTicker
 
 
 if __name__ == "__main__":
@@ -13,9 +13,11 @@ if __name__ == "__main__":
     input = jetson_utils.videoSource(opt.input_URI, argv=sys.argv)
     output = jetson_utils.videoOutput(opt.output_URI, argv=sys.argv)
     pixelate_annotator = sv.PixelateAnnotator()
+    ticker = FPSTicker()
 
     while True:
         img = input.Capture()
+        ticker.tick()
         if img is None:
             continue
 
@@ -28,12 +30,10 @@ if __name__ == "__main__":
                 img_np = pixelate_annotator.annotate(
                     scene=img_np, detections=person_detections
                 )
-                jetson_utils.Log.Success(f"{person_detections}")
 
         img_cuda = jetson_utils.cudaFromNumpy(img_np)
 
         output.Render(img_cuda)
-        net.PrintProfilerTimes()
 
         if not input.IsStreaming() or not output.IsStreaming():
             break

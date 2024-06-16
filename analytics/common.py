@@ -1,10 +1,12 @@
 import argparse
 import sys
+from datetime import datetime
 from typing import List, Optional
 
 import supervision as sv
 import numpy as np
 import jetson_inference
+import jetson_utils
 
 
 def parse_args():
@@ -64,3 +66,21 @@ def to_sv_detections(
         confidence=np.array(confidences),
         tracker_id=np.array(tracker_ids),
     )
+
+
+class FPSTicker:
+    def __init__(self, interval: int = 2) -> None:
+        self._interval = interval
+        self._last_tick = datetime.now()
+        self._count = 0
+        self._fps = 0
+
+    def tick(self) -> None:
+        self._count += 1
+        now = datetime.now()
+        dt = now - self._last_tick
+        if dt.total_seconds() > self._interval:
+            self._fps = self._count / dt.total_seconds()
+            jetson_utils.Log.Success(f"FPS: {self._fps:.2f}")
+            self._last_tick = now
+            self._count = 0
